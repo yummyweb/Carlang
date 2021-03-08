@@ -2,3 +2,6 @@ set hi "hi"
 set num 4
 set checked false
 log hi
+func john {
+    set variable "variable"
+}

@@ -1,3 +1,5 @@
+import parseVar from "./variables.js"
+
 const AST = () => ({
     type: "File",
     errors: [],
@@ -11,22 +13,36 @@ const AST = () => ({
     comments: [],
 })
 
-const VariableDeclaration = () => ({
-    type: "VariableDeclaration",
-    declarations: [],
-    kind: "const",
-})
-
-const VariableDeclarator = (token, type) => ({
-    type: "VariableDeclarator",
+const FunctionDeclaration = (token) => ({
+    type: "FunctionDeclaration",
     id: {
         type: "Identifier",
-        name: token,
+        name: token
     },
-    init: {
-        type,
-        value: null,
-    },
+    params: [],
+    body: {},
+})
+
+const BlockStatement = () => ({
+    type: "BlockStatement",
+    body: [],
+})
+
+const ExpressionStatement = (obj, props) => ({
+    type: "ExpressionStatement",
+    expression: {
+        type: "CallExpression",
+        callee: {
+            type: "MemberExpression",
+            object: {
+                type: "Identifier",
+                name: obj,
+            },
+            ...props,
+            computed: false,
+        },
+        arguments: [],
+    }, 
 })
 
 const ConsoleStatement = () => ({
@@ -69,18 +85,10 @@ const BooleanLiteral = value => ({
     value,
 })
 
-const cleanString = str => str.replace(/"/g, "")
+const FUNCTION = "func"
 
-const ASSIGNMENT = "set"
-const STRING = "StringLiteral"
-const NUMBER = "NumericLiteral"
-const BOOLEAN = "BooleanLiteral"
-
-const isDeclaration = line => line.includes(ASSIGNMENT)
+const isFunction = line => line.includes(FUNCTION)
 const isLog = line => line.match(/^log\s/g) !== null
-const isString = value => value.match(/"/g) !== null
-const isNumber = value => value.match(/[0-9]/g) !== null
-const isBool = value => value === "true" || value === "false"
 
 const parseProgram = (sourceCode, ast) => {
     const lines = sourceCode.split("\n")
@@ -88,30 +96,26 @@ const parseProgram = (sourceCode, ast) => {
     for (let i = 0; i < lines.length; i += 1) {
         const line = lines[i]
         const tokens = line.split(" ")
+        
+        let declaration = parseVar(tokens, ast)
+        ast.program.body.push(declaration)
 
-        if (isDeclaration(tokens)) {
-            let value = tokens[tokens.length - 1]
-            let type
+        if (isFunction(tokens)) {
+            let identifier = tokens[1]
+            const declaration = FunctionDeclaration(identifier)
+            const block = BlockStatement()
+            declaration.body = block
 
-            if (isString(value)) {
-                type = STRING
-                value = cleanString(value)
+            for (let lineno = i+1; lineno < lines.length; lineno += 1) {
+                const tokens = lines[lineno].split(" ")
+                if (tokens[0] === "}") {
+                    break
+                }
+                else {
+                    const varDecleration = parseVar(tokens, ast)
+                    block.body.push(varDecleration)
+                }
             }
-
-            if (isNumber(value)) {
-                type = NUMBER
-            }
-
-            if (isBool(value)) {
-                type = BOOLEAN
-            }
-
-            const declaration = VariableDeclaration()
-            const declarator = VariableDeclarator(tokens[1], type)
-
-            declarator.init.value = value
-            declaration.declarations = [declarator]
-
             ast.program.body.push(declaration)
         }
 
@@ -119,15 +123,15 @@ const parseProgram = (sourceCode, ast) => {
             const values = line.split(" ").slice(1)
             const statement = ConsoleStatement()
 
-            statement.expression.arguments = values.map(value => {
-                if (isString(value)) {
-                    return StringLiteral(cleanString(value))
-                }
-                else if (isNumber(value)) {
-                    return NumericLiteral(value)
-                }
-                return Argument(value)
-            })
+            // statement.expression.arguments = values.map(value => {
+            //     if (isString(value)) {
+            //         return StringLiteral(cleanString(value))
+            //     }
+            //     else if (isNumber(value)) {
+            //         return NumericLiteral(value)
+            //     }
+            //     return Argument(value)
+            // })
 
             ast.program.body.push(statement)
         }
