@@ -1,10 +1,10 @@
 {
   "name": "carlang",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "standard-version"
   },
   "type": "module",
   "keywords": [],
@@ -12,5 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@babel/generator": "^7.13.9"
+  },
+  "devDependencies": {
+    "standard-version": "^9.1.1"
   }
 }
