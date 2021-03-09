@@ -1,5 +1,6 @@
 import parseVar from "./variables.js"
 import parseLog from "./log.js"
+import { FUNCTION, RETURN, ASSIGNMENT } from './utils/tokenTypes.js'
 
 const AST = () => ({
     type: "File",
@@ -43,9 +44,7 @@ const Identifier = (name) => ({
     name,
 })
 
-const FUNCTION = "func"
-
-const RESERVED_KEYWORDS = ["func", "new", "set"]
+const RESERVED_KEYWORDS = [FUNCTION, ASSIGNMENT, RETURN]
 
 const isFunction = line => line.includes(FUNCTION)
 const callFunction = value => typeof value === "string" && value !== '' && !RESERVED_KEYWORDS.includes(value) && /^[A-Za-z]+$/.test(value)
