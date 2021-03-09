@@ -2,6 +2,7 @@ set spanishWord "estar"
 
 func toEnglish ( word lang ) {
     log word
+    return word
 }
 
 toEnglish ( "hey" )

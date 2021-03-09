@@ -44,9 +44,15 @@ const Identifier = (name) => ({
     name,
 })
 
+const ReturnStatement = (arg) => ({
+    type: "ReturnStatement",
+    argument: Identifier(arg)
+})
+
 const RESERVED_KEYWORDS = [FUNCTION, ASSIGNMENT, RETURN]
 
 const isFunction = line => line.includes(FUNCTION)
+const hasReturn = line => line.includes(RETURN)
 const callFunction = value => typeof value === "string" && value !== '' && !RESERVED_KEYWORDS.includes(value) && /^[A-Za-z]+$/.test(value)
 
 const parseProgram = (sourceCode, ast) => {
@@ -92,6 +98,16 @@ const parseProgram = (sourceCode, ast) => {
 
                 if (tokens[0] === "}") {
                     break
+                }
+                if (hasReturn(lines[lineno])) {
+                    tokens.map(token => {
+                        if (token !== "") {
+                            if (token !== RETURN) {
+                                const returnStatement = ReturnStatement(token)
+                                block.body.push(returnStatement)
+                            }
+                        }
+                    })
                 }
                 if (declarationStatement[2] === '(') {
                     declarationStatement.map((v, i) => {
