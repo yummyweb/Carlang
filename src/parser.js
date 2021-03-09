@@ -1,5 +1,5 @@
 import parseVar from "./variables.js"
-import { isString, isNumber, isBool } from './utils/helpers.js'
+import parseLog from "./log.js"
 
 const AST = () => ({
     type: "File",
@@ -46,50 +46,9 @@ const ExpressionStatement = (obj, props) => ({
     }, 
 })
 
-const ConsoleStatement = () => ({
-    type: "ExpressionStatement",
-    expression: {
-        type: "CallExpression",
-        callee: {
-            type: "MemberExpression",
-            object: {
-                type: "Identifier",
-                name: "console",
-            },
-            property: {
-                type: "Identifier",
-                name: "log",
-            },
-            computed: false,
-        },
-        arguments: [],
-    },
-})
-
-const Argument = name => ({
-    type: "Identifier",
-    name,
-})
-
-const StringLiteral = value => ({
-    type: "StringLiteral",
-    value,
-})
-
-const NumericLiteral = value => ({
-    type: "NumericLiteral",
-    value,
-})
-
-const BooleanLiteral = value => ({
-    type: "BooleanLiteral",
-    value,
-})
-
 const FUNCTION = "func"
 
 const isFunction = line => line.includes(FUNCTION)
-const isLog = line => line.match(/^log\s/g) !== null
 
 const parseProgram = (sourceCode, ast) => {
     const lines = sourceCode.split("\n")
@@ -120,26 +79,8 @@ const parseProgram = (sourceCode, ast) => {
             ast.program.body.push(declaration)
         }
 
-        if (isLog(line)) {
-            const values = line.split(" ").slice(1)
-            const statement = ConsoleStatement()
-
-            statement.expression.arguments = values.map(value => {
-                if (isString(value)) {
-                    return StringLiteral(cleanString(value))
-                }
-                else if (isNumber(value)) {
-                    return NumericLiteral(value)
-                }
-                else if (isBool(value)) {
-                    return BooleanLiteral(value)
-                }
-                
-                return Argument(value)
-            })
-
-            ast.program.body.push(statement)
-        }
+        const statement = parseLog(line)
+        ast.program.body.push(statement)
     }
 
     return ast

@@ -6,5 +6,6 @@ const isNumber = value => value.match(/[0-9]/g) !== null
 const isBool = value => value === "true" || value === "false"
 const isDeclaration = line => line.includes(ASSIGNMENT)
 const cleanString = str => str.replace(/"/g, "")
+const isLog = line => line.match(/^log\s/g) !== null
 
-export { isString, isNumber, isBool, isDeclaration, cleanString }
+export { isString, isNumber, isBool, isDeclaration, cleanString, isLog }
