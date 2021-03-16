@@ -1,8 +1,8 @@
 set spanishWord "estar"
 
-func toEnglish ( word lang ) {
+func toEnglish ( word lang )
     log word
     return word
-}
+end
 
 toEnglish ( "hey" )

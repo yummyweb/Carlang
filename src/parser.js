@@ -1,6 +1,6 @@
 import parseVar from "./variables.js"
 import parseLog from "./log.js"
-import { FUNCTION, RETURN, ASSIGNMENT } from './utils/tokenTypes.js'
+import { FUNCTION, RETURN, ASSIGNMENT, END } from './utils/tokenTypes.js'
 
 const AST = () => ({
     type: "File",
@@ -49,7 +49,7 @@ const ReturnStatement = (arg) => ({
     argument: Identifier(arg)
 })
 
-const RESERVED_KEYWORDS = [FUNCTION, ASSIGNMENT, RETURN]
+const RESERVED_KEYWORDS = [FUNCTION, ASSIGNMENT, RETURN, END]
 
 const isFunction = line => line.includes(FUNCTION)
 const hasReturn = line => line.includes(RETURN)
@@ -96,7 +96,7 @@ const parseProgram = (sourceCode, ast) => {
                 let declarationStatement = lines[lineno-1].split(" ")
                 let arguements = []
 
-                if (tokens[0] === "}") {
+                if (lines[lineno] === "end") {
                     break
                 }
                 if (hasReturn(lines[lineno])) {
@@ -115,7 +115,7 @@ const parseProgram = (sourceCode, ast) => {
                             arguements.push(v)
                         }
                     })
-                    arguements = arguements.filter(arg => arg !== ')' && arg !== '{')
+                    arguements = arguements.filter(arg => arg !== ')')
                     arguements.map(arg => {
                         declaration.params.push(Identifier(arg))
                     })

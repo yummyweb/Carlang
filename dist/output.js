@@ -6,4 +6,5 @@ function toEnglish(word, lang) {
 }
 
 console.log(word);
+end();
 toEnglish("hey");

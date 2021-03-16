@@ -5,5 +5,6 @@ const BOOLEAN = "BooleanLiteral"
 const ASSIGNMENT = "set"
 const FUNCTION = "func"
 const RETURN = "return"
+const END = "end"
 
-export { STRING, NUMBER, BOOLEAN, ASSIGNMENT, FUNCTION, RETURN }
+export { STRING, NUMBER, BOOLEAN, ASSIGNMENT, FUNCTION, RETURN, END }
